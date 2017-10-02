@@ -25,8 +25,11 @@ class Scraper
     public function scrapPage()
     {
         $content = $this->getContent();
-
-        $regexp = '/<a target=blank href="(.*)"><img class="moduleFeaturedThumb" height="90" src="(.*)" width="120" \/><\/a>/';
+        //CurlHelper::log($content);
+        // For home page
+        //$regexp = '/<a target=blank href="(.*)"><img class="moduleFeaturedThumb" height="90" src="(.*)" width="120" \/><\/a>/';
+        // For pagination page
+        $regexp = '/<div class="imagechannel">[\r\n]<a target=blank href="(\S*)">[\r\n]<img src="(\S*)"[^>]*>/';
         if (!preg_match_all($regexp, $content, $matches, PREG_SET_ORDER)) {
             return false;
         }
@@ -57,27 +60,33 @@ class Scraper
             if (!preg_match($authorRegExp, $videoContent, $authorMatch)) {
                 echo 'author: failed to extracted' . PHP_EOL;
                 $log .= 'author: failed to extracted' . PHP_EOL;
+            }else{
+                echo 'author: ' . $authorMatch[1] . PHP_EOL;
+                $log .= 'author: ' . $authorMatch[1] . PHP_EOL;
             }
-            echo 'author: ' . $authorMatch[1] . PHP_EOL;
-            $log .= 'author: ' . $authorMatch[1] . PHP_EOL;
 
             // extract video description
-            $descriptionRegExp = '/<span class="info">Description: <\/span>.*[\r\n](.*)<br \/>/';
+            // Old regexp
+            //$descriptionRegExp = '/<span class="info">Description: <\/span>.*[\r\n](.*)<br \/>/';
+            // Extract description from div[id]
+            $descriptionRegExp = '/<div id="viewvideo-title">[\r\n](.*)[\r\n]<\/div>/';
             if (!preg_match($descriptionRegExp, $videoContent, $descriptionMatch)) {
                 echo 'description: failed to extracted' . PHP_EOL;
                 $log .= 'description: failed to extracted' . PHP_EOL;
+            }else{
+                echo 'description: ' . $descriptionMatch[1] . PHP_EOL;
+                $log .= 'description: ' . $descriptionMatch[1] . PHP_EOL;
             }
-            echo 'description: ' . $descriptionMatch[1] . PHP_EOL;
-            $log .= 'description: ' . $descriptionMatch[1] . PHP_EOL;
 
             // extract video release_time
             $releaseTimeRegExp = '/<span class="info">Added: <\/span><span class="title">(.*)<\/span>/';
             if (!preg_match($releaseTimeRegExp, $videoContent, $releaseTimeMatch)) {
                 echo 'produce_time: failed to extracted' . PHP_EOL;
                 $log .= 'produce_time: failed to extracted' . PHP_EOL;
+            }else{
+                echo 'produce_time: ' . $releaseTimeMatch[1] . PHP_EOL;
+                $log .= 'produce_time: ' . $releaseTimeMatch[1] . PHP_EOL;
             }
-            echo 'produce_time: ' . $releaseTimeMatch[1] . PHP_EOL;
-            $log .= 'produce_time: ' . $releaseTimeMatch[1] . PHP_EOL;
 
             // extract video run_time & views
             $runTimeViewsRegExp = '/<span class="info">Runtime:<\/span>(.*)[\r\n].*<span class="info"> Views:<\/span>(.*)<span class="info"> Comments/';
@@ -86,12 +95,14 @@ class Scraper
                 echo 'views: failed to extracted' . PHP_EOL;
                 $log .= 'run_time: failed to extracted' . PHP_EOL;
                 $log .= 'views: failed to extracted' . PHP_EOL;
+            }else{
+                echo 'run_time: ' . $runTimeViewsMatch[1] . PHP_EOL;
+                echo 'views: ' . $runTimeViewsMatch[2] . PHP_EOL;
+                $log .= 'run_time: ' . $runTimeViewsMatch[1] . PHP_EOL;
+                $log .= 'views: ' . $runTimeViewsMatch[2] . PHP_EOL;
             }
-            echo 'run_time: ' . $runTimeViewsMatch[1] . PHP_EOL;
-            echo 'views: ' . $runTimeViewsMatch[2] . PHP_EOL;
+
             echo PHP_EOL . PHP_EOL;
-            $log .= 'run_time: ' . $runTimeViewsMatch[1] . PHP_EOL;
-            $log .= 'views: ' . $runTimeViewsMatch[2] . PHP_EOL;
             $log .= PHP_EOL . PHP_EOL;
         }
 
