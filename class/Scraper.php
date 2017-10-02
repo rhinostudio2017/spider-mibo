@@ -32,47 +32,70 @@ class Scraper
         }
 
         // Iterate each regexp and scrap the related video node(in the player page)
+        $log = '';
         foreach ($matches as $match) {
             $videoLink = $match[1];
             $imageLink = $match[2];
-            echo $imageLink . ': ' . $videoLink . PHP_EOL;
+            echo 'poster_link: ' . $imageLink . PHP_EOL;
+            $log .= 'poster_link: ' . $imageLink . PHP_EOL;
 
             $this->setUrl($videoLink);
             $videoContent = $this->getContent();
-            //echo $videoContent . PHP_EOL;
-            CurlHelper::log($videoContent);
+            //CurlHelper::log($videoContent);
             // extract video link
             $videoRegExp = '/readonly="readOnly">([^<]*)<\/textarea>/';
             if (!preg_match($videoRegExp, $videoContent, $videoMatch)) {
-                break;
+                echo 'video_link: failed to extracted' . PHP_EOL;
+                $log .= 'video_link: failed to extracted' . PHP_EOL;
+            }else{
+                echo 'video_link: ' . $videoMatch[1] . PHP_EOL;
+                $log .= 'video_link: ' . $videoMatch[1] . PHP_EOL;
             }
-            echo $videoMatch[1] . PHP_EOL . PHP_EOL;
-            /*
-            // extract video name
-            $videoRegExp = '/<form id="linkForm2".*readonly="readOnly">(.*)<\/textarea><\/form>/';
-            if (!preg_match($videoRegExp, $videoContent, $videoMatch)) {
-                echo $videoMatch[1] . PHP_EOL . PHP_EOL;
-            }
-            // extract video description
-            $videoRegExp = '/<form id="linkForm2".*readonly="readOnly">(.*)<\/textarea><\/form>/';
-            if (!preg_match($videoRegExp, $videoContent, $videoMatch)) {
-                echo $videoMatch[1] . PHP_EOL . PHP_EOL;
-            }
-            // extract video author
-            $videoRegExp = '/<form id="linkForm2".*readonly="readOnly">(.*)<\/textarea><\/form>/';
-            if (!preg_match($videoRegExp, $videoContent, $videoMatch)) {
-                echo $videoMatch[1] . PHP_EOL . PHP_EOL;
-            }
-            // extract video views
-            $videoRegExp = '/<form id="linkForm2".*readonly="readOnly">(.*)<\/textarea><\/form>/';
-            if (!preg_match($videoRegExp, $videoContent, $videoMatch)) {
-                echo $videoMatch[1] . PHP_EOL . PHP_EOL;
-            }
-            */
 
-            break;
+            // extract video author
+            $authorRegExp = '/<span class="info">From: <\/span>[\r\n]<a[^>]*><span class="title">(.*)<\/span>/';
+            if (!preg_match($authorRegExp, $videoContent, $authorMatch)) {
+                echo 'author: failed to extracted' . PHP_EOL;
+                $log .= 'author: failed to extracted' . PHP_EOL;
+            }
+            echo 'author: ' . $authorMatch[1] . PHP_EOL;
+            $log .= 'author: ' . $authorMatch[1] . PHP_EOL;
+
+            // extract video description
+            $descriptionRegExp = '/<span class="info">Description: <\/span>.*[\r\n](.*)<br \/>/';
+            if (!preg_match($descriptionRegExp, $videoContent, $descriptionMatch)) {
+                echo 'description: failed to extracted' . PHP_EOL;
+                $log .= 'description: failed to extracted' . PHP_EOL;
+            }
+            echo 'description: ' . $descriptionMatch[1] . PHP_EOL;
+            $log .= 'description: ' . $descriptionMatch[1] . PHP_EOL;
+
+            // extract video release_time
+            $releaseTimeRegExp = '/<span class="info">Added: <\/span><span class="title">(.*)<\/span>/';
+            if (!preg_match($releaseTimeRegExp, $videoContent, $releaseTimeMatch)) {
+                echo 'produce_time: failed to extracted' . PHP_EOL;
+                $log .= 'produce_time: failed to extracted' . PHP_EOL;
+            }
+            echo 'produce_time: ' . $releaseTimeMatch[1] . PHP_EOL;
+            $log .= 'produce_time: ' . $releaseTimeMatch[1] . PHP_EOL;
+
+            // extract video run_time & views
+            $runTimeViewsRegExp = '/<span class="info">Runtime:<\/span>(.*)[\r\n].*<span class="info"> Views:<\/span>(.*)<span class="info"> Comments/';
+            if (!preg_match($runTimeViewsRegExp, $videoContent, $runTimeViewsMatch)) {
+                echo 'run_time: failed to extracted' . PHP_EOL;
+                echo 'views: failed to extracted' . PHP_EOL;
+                $log .= 'run_time: failed to extracted' . PHP_EOL;
+                $log .= 'views: failed to extracted' . PHP_EOL;
+            }
+            echo 'run_time: ' . $runTimeViewsMatch[1] . PHP_EOL;
+            echo 'views: ' . $runTimeViewsMatch[2] . PHP_EOL;
+            echo PHP_EOL . PHP_EOL;
+            $log .= 'run_time: ' . $runTimeViewsMatch[1] . PHP_EOL;
+            $log .= 'views: ' . $runTimeViewsMatch[2] . PHP_EOL;
+            $log .= PHP_EOL . PHP_EOL;
         }
 
+        CurlHelper::log($log);
     }
 
     public function scrapPageTest()

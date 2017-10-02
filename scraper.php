@@ -3,7 +3,9 @@
 require __DIR__ . '/autoload.php';
 require __DIR__ . '/config/common.php';
 
-$scraper = new MB\Scraper('http://91porn.com/index.php');
+$pageLink = 'http://91porn.com/video.php?category=rf&page=113';
+
+$scraper = new MB\Scraper($pageLink);
 
 //\MB\CurlHelper::log($scraper->getContent());
 
