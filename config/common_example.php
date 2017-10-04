@@ -1,3 +1,3 @@
 <?php
 
-define('LOG_PATH', 'path_example');
+define('LOG_DIR', 'path_example');

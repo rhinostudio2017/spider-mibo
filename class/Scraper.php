@@ -35,8 +35,10 @@ class Scraper
         }
 
         // Iterate each regexp and scrap the related video node(in the player page)
-        $log = '';
+        $log = 'Total: ' . count($matches) . PHP_EOL;
+        $i = 0;
         foreach ($matches as $match) {
+            $log .= 'No.: ' . ++$i . PHP_EOL;
             $videoLink = $match[1];
             $imageLink = $match[2];
             echo 'poster_link: ' . $imageLink . PHP_EOL;
@@ -44,7 +46,8 @@ class Scraper
 
             $this->setUrl($videoLink);
             $videoContent = $this->getContent();
-            //CurlHelper::log($videoContent);
+            //CurlHelper::log($videoContent, 'tmp');
+
             // extract video link
             $videoRegExp = '/readonly="readOnly">([^<]*)<\/textarea>/';
             if (!preg_match($videoRegExp, $videoContent, $videoMatch)) {
@@ -55,6 +58,26 @@ class Scraper
                 $log .= 'video_link: ' . $videoMatch[1] . PHP_EOL;
             }
 
+            // extract video name
+            $nameRegExp = '/<div id="viewvideo-title">[\r\n](.*)[\r\n]<\/div>/';
+            if (!preg_match($nameRegExp, $videoContent, $nameMatch)) {
+                echo 'name: failed to extracted' . PHP_EOL;
+                $log .= 'name: failed to extracted' . PHP_EOL;
+            }else{
+                echo 'name: ' . $nameMatch[1] . PHP_EOL;
+                $log .= 'name: ' . $nameMatch[1] . PHP_EOL;
+            }
+
+            // extract video description
+            $descriptionRegExp = '/<meta name="title" content="(.*)[\r\n]*" \/>/';
+            if (!preg_match($descriptionRegExp, $videoContent, $descriptionMatch)) {
+                echo 'description: failed to extracted' . PHP_EOL;
+                $log .= 'description: failed to extracted' . PHP_EOL;
+            }else{
+                echo 'description: ' . $descriptionMatch[1] . PHP_EOL;
+                $log .= 'description: ' . $descriptionMatch[1] . PHP_EOL;
+            }
+
             // extract video author
             $authorRegExp = '/<span class="info">From: <\/span>[\r\n]<a[^>]*><span class="title">(.*)<\/span>/';
             if (!preg_match($authorRegExp, $videoContent, $authorMatch)) {
@@ -63,19 +86,6 @@ class Scraper
             }else{
                 echo 'author: ' . $authorMatch[1] . PHP_EOL;
                 $log .= 'author: ' . $authorMatch[1] . PHP_EOL;
-            }
-
-            // extract video description
-            // Old regexp
-            //$descriptionRegExp = '/<span class="info">Description: <\/span>.*[\r\n](.*)<br \/>/';
-            // Extract description from div[id]
-            $descriptionRegExp = '/<div id="viewvideo-title">[\r\n](.*)[\r\n]<\/div>/';
-            if (!preg_match($descriptionRegExp, $videoContent, $descriptionMatch)) {
-                echo 'description: failed to extracted' . PHP_EOL;
-                $log .= 'description: failed to extracted' . PHP_EOL;
-            }else{
-                echo 'description: ' . $descriptionMatch[1] . PHP_EOL;
-                $log .= 'description: ' . $descriptionMatch[1] . PHP_EOL;
             }
 
             // extract video release_time

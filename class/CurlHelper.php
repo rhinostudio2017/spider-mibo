@@ -38,18 +38,19 @@ class CurlHelper
         curl_close($curl);
     }
 
-    public static function log($message)
+    public static function log($message, $file = 'log.txt')
     {
-        if (!defined('LOG_PATH')) {
-            return '{LOG_PATH} is not configured correctly';
+        if (!defined('LOG_DIR')) {
+            return '{LOG_DIR} is not configured correctly';
         }
 
-        if (!file_exists(LOG_PATH)) {
-            mkdir(dirname(LOG_PATH), 0777, true);
+        $filePath = LOG_DIR . '/' . $file;
+        if (!file_exists(LOG_DIR)) {
+            mkdir(LOG_DIR, 0777, true);
         }
 
-        if (!($fh = fopen(LOG_PATH, 'a+'))) {
-            return 'Failed to open log file {' . LOG_PATH . '}';
+        if (!($fh = fopen($filePath, 'a+'))) {
+            return 'Failed to open log file {' . $filePath. '}';
         }
 
         $message = (new \DateTime())->format('Y-m-d H:i:s') . ' ' . $message . PHP_EOL;
