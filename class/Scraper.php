@@ -25,11 +25,12 @@ class Scraper
     public function scrapPage()
     {
         $content = $this->getContent();
-        //CurlHelper::log($content);
+        //CurlHelper::log($content, 'tmp');
+
         // For home page
         //$regexp = '/<a target=blank href="(.*)"><img class="moduleFeaturedThumb" height="90" src="(.*)" width="120" \/><\/a>/';
         // For pagination page
-        $regexp = '/<div class="imagechannel">[\r\n]<a target=blank href="(\S*)">[\r\n]<img src="(\S*)"[^>]*>/';
+        $regexp = '/<div class="imagechannel(?:hd)?">[\r\n](?:<img[^>]*>[\r\n])?<a target=blank href="(\S*)">[\r\n]<img src="(\S*)"[^>]*>/';
         if (!preg_match_all($regexp, $content, $matches, PREG_SET_ORDER)) {
             return false;
         }
